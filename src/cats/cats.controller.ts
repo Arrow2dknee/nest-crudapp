@@ -7,20 +7,23 @@ import {
     Body,
     Delete,
     Put,
+    UseFilters,
 } from '@nestjs/common';
 import { of, Observable } from 'rxjs';
 
 import { CreateCatDto, UpdateCatDto } from './dto';
-
 import { CatsService } from './cats.service';
-
 import { Cat } from './interfaces/cat.interface';
+import { ForbiddenException } from '../common/exceptions/forbidden.exception';
+import { HttpExceptionFilter } from '../common/filter/http-exception.filter';
 
 interface FindOneInterface {
     id: string;
 }
 
 @Controller('cats')
+// controller scoped exception filter
+@UseFilters(HttpExceptionFilter)
 export class CatsController {
     constructor(private catService: CatsService) {
         // do something
@@ -33,8 +36,11 @@ export class CatsController {
     }
 
     @Post()
+    // method scoped exception filter
+    @UseFilters(new HttpExceptionFilter())
     async create(@Body() createCatDto: CreateCatDto): Promise<void> {
-        this.catService.create(createCatDto);
+        // this.catService.create(createCatDto);
+        throw new ForbiddenException();
     }
 
     // @Get() // Rxjs observables
